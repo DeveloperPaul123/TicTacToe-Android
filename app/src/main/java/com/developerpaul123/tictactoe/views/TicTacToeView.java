@@ -8,6 +8,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
 
 import com.developerpaul123.tictactoe.R;
 import com.developerpaul123.tictactoe.gameobjects.Board;
@@ -23,16 +24,58 @@ import java.util.List;
  */
 public class TicTacToeView extends View {
 
+    /**
+     * Listener for this view. Provides a callback for where the user has clicked.
+     */
     public interface TicTacToeListener {
         public void onSquareClicked(int row, int col);
+        public void onMoveAdded(Board board);
     }
 
+    /**
+     * Array of rectangles that enclose the squares of the board.
+     */
     private RectF rects[][];
+
+    /**
+     * Current board.
+     */
     private Board board;
+
+    /**
+     * Current listener.
+     */
     private TicTacToeListener listener;
+
+    /**
+     * Main paint for the board.
+     */
     private Paint mainPaint;
-    private Paint xoPaint;
+
+    /**
+     * Paint for x moves.
+     */
+    private Paint xPaint;
+
+    /**
+     * xoPaint for o player moves.
+     */
+    private Paint oPaint;
+
+    /**
+     * Seperate paint for the animation.
+     */
+    private Paint animationPaint;
+
+    /**
+     * Float values for spacing.
+     */
     private float squarePadding, mainPaintStrokeSize, xoPaintStrokeSize;
+
+    /**
+     * The current path to animate
+     */
+    private AnimatedPath currentPath;
 
     public TicTacToeView(Context context) {
         super(context);
@@ -65,12 +108,21 @@ public class TicTacToeView extends View {
         mainPaint.setStyle(Paint.Style.STROKE);
         mainPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        xoPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        xoPaint.setColor(getResources().getColor(R.color.colorAccent));
-        xoPaint.setStrokeWidth(xoPaintStrokeSize);
-        xoPaint.setAntiAlias(true);
-        xoPaint.setStrokeCap(Paint.Cap.ROUND);
-        xoPaint.setStyle(Paint.Style.STROKE);
+        oPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        oPaint.setColor(getResources().getColor(R.color.secondPlayerColor));
+        oPaint.setStrokeWidth(xoPaintStrokeSize);
+        oPaint.setAntiAlias(true);
+        oPaint.setStrokeCap(Paint.Cap.ROUND);
+        oPaint.setStyle(Paint.Style.STROKE);
+
+        xPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        xPaint.setColor(getResources().getColor(R.color.colorAccent));
+        xPaint.setStrokeCap(Paint.Cap.ROUND);
+        xPaint.setStrokeWidth(xoPaintStrokeSize);
+        xPaint.setAntiAlias(true);
+        xPaint.setStyle(Paint.Style.STROKE);
+
+        animationPaint = new Paint(xPaint);
 
         board = new Board(3, 3);
         rects = new RectF[3][3];
@@ -112,15 +164,21 @@ public class TicTacToeView extends View {
             Row r = boardState.get(z);
             for(int q = 0; q < r.getSize(); q++) {
                 if(r.getValue(q) == PlayerType.USER.getValue()) {
+                    //x plays.
                     Path p = getXPath(rects[z][q]);
-                    canvas.drawPath(p, xoPaint);
+                    canvas.drawPath(p, xPaint);
                 }
                 else if(r.getValue(q) == PlayerType.COMPUTER_MCTS.getValue() ||
                         r.getValue(q) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                    //o plays.
                     Path p = getOPath(rects[z][q]);
-                    canvas.drawPath(p, xoPaint);
+                    canvas.drawPath(p, oPaint);
                 }
             }
+        }
+
+        if(currentPath != null) {
+            currentPath.onDraw(canvas);
         }
     }
 
@@ -134,12 +192,13 @@ public class TicTacToeView extends View {
                 for(int i = 0; i < board.getRows(); i++) {
                     for(int j = 0; j < board.getColumns(); j++) {
                         if(rects[i][j].contains(x, y)) {
-                            board.addAMove(new Point(i, j), PlayerType.COMPUTER_MCTS);
+                            if(listener != null) {
+                                listener.onSquareClicked(i, j);
+                            }
                             break;
                         }
                     }
                 }
-                invalidate();
                 return true;
             default:
                 return super.onTouchEvent(event);
@@ -168,8 +227,67 @@ public class TicTacToeView extends View {
      */
     public void setBoard(Board board) {
         this.board = board;
-        this.rects = new RectF[board.getRows()][board.getColumns()];
+
+        this.currentPath = null;
         invalidate();
+    }
+
+    /**
+     * Add a move to the current board.
+     * @param p the point of play.
+     * @param playerType the player that made the move.
+     */
+    public void addAMove(final Point p, final PlayerType playerType) {
+        if(playerType.getValue() == PlayerType.USER.getValue()) {
+            animationPaint.setColor(getResources().getColor(R.color.colorAccent));
+            currentPath = new AnimatedPath(this, getXPath(rects[p.getRow()][p.getColumn()]), animationPaint);
+            currentPath.animate(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    board.addAMove(new Point(p.getRow(), p.getColumn()), PlayerType.USER);
+                    currentPath = null;
+                    if(listener != null) {
+                        listener.onMoveAdded(board);
+                    }
+                    invalidate();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+        else if(playerType.getValue() == PlayerType.COMPUTER_MINIMAX.getValue() ||
+                playerType.getValue() == PlayerType.COMPUTER_MCTS.getValue()) {
+            animationPaint.setColor(getResources().getColor(R.color.secondPlayerColor));
+            currentPath = new AnimatedPath(this, getXPath(rects[p.getRow()][p.getColumn()]), animationPaint);
+            currentPath.animate(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    board.addAMove(new Point(p.getRow(), p.getColumn()),
+                            playerType.getValue() == PlayerType.COMPUTER_MINIMAX.getValue() ?
+                                    PlayerType.COMPUTER_MINIMAX: PlayerType.COMPUTER_MCTS);
+                    currentPath = null;
+                    invalidate();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
     }
 
     /**
@@ -197,4 +315,5 @@ public class TicTacToeView extends View {
         p.addCircle(rect.centerX(), rect.centerY(), (rect.width()/2) - squarePadding, Path.Direction.CW);
         return p;
     }
+
 }

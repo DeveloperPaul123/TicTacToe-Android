@@ -16,4 +16,19 @@ public enum PlayerType {
     public int getValue() {
         return this.value;
     }
+
+    public static PlayerType getType(int t) {
+        switch (t) {
+            case 0:
+                return NO_ONE;
+            case 1:
+                return USER;
+            case 2:
+                return COMPUTER_MINIMAX;
+            case 3:
+                return COMPUTER_MCTS;
+            default:
+                return NO_ONE;
+        }
+    }
 }

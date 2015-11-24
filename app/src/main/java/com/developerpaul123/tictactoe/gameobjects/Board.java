@@ -59,7 +59,7 @@ public class Board {
      * @return true if there was a tie, false otherwise.
      */
     public boolean isATie() {
-        return false;
+        return !hasOWon() && !hasXWon() && availablePoints.size() == 0;
     }
 
     /**
@@ -67,6 +67,48 @@ public class Board {
      * @return true if the x player won, false otherwise.
      */
     public boolean hasXWon() {
+        Row row1 = boardList.get(0);
+        Row row2 = boardList.get(1);
+        Row row3 = boardList.get(2);
+
+        //check rows and columns.
+        for(int i = 0; i < columns-2; i++) {
+            if(row1.getValue(i) == row1.getValue(i+1) && row1.getValue(i+1) == row1.getValue(i+2)
+                    && row1.getValue(0) == PlayerType.USER.getValue()) {
+                return true;
+            }
+            if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
+                    && row2.getValue(0) == PlayerType.USER.getValue()) {
+                return true;
+            }
+            if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
+                    && row3.getValue(0) == PlayerType.USER.getValue()) {
+                return true;
+            }
+
+            if(row1.getValue(i) == row2.getValue(i) && row2.getValue(i) == row3.getValue(i)
+                    && row1.getValue(i) == PlayerType.USER.getValue()) {
+                return true;
+            }
+            if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
+                    && row1.getValue(i+1) == PlayerType.USER.getValue()) {
+                return true;
+            }
+            if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
+                    && row1.getValue(i+2) == PlayerType.USER.getValue()) {
+                return true;
+            }
+        }
+
+        //check diagonals.
+        if(row1.getValue(0) == row2.getValue(1) && row2.getValue(1) == row3.getValue(2)
+                && row1.getValue(0) == PlayerType.USER.getValue()) {
+            return true;
+        }
+        else if (row1.getValue(2) == row2.getValue(1) && row2.getValue(1) == row3.getValue(0)
+                && row1.getValue(2) == PlayerType.USER.getValue()) {
+            return true;
+        }
         return false;
     }
 
@@ -75,6 +117,48 @@ public class Board {
      * @return true if the O player won, false otherwise.
      */
     public boolean hasOWon() {
+        Row row1 = boardList.get(0);
+        Row row2 = boardList.get(1);
+        Row row3 = boardList.get(2);
+
+        //check rows and columns.
+        for(int i = 0; i < columns-2; i++) {
+            if(row1.getValue(i) == row1.getValue(i+1) && row1.getValue(i+1) == row1.getValue(i+2)
+                    && row1.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+            if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
+                    && row2.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+            if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
+                    && row3.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+
+            if(row1.getValue(i) == row2.getValue(i) && row2.getValue(i) == row3.getValue(i)
+                    && row1.getValue(i) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+            if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
+                    && row1.getValue(i+1) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+            if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
+                    && row1.getValue(i+2) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return true;
+            }
+        }
+
+        //check diagonals.
+        if(row1.getValue(0) == row2.getValue(1) && row2.getValue(1) == row3.getValue(2)
+                && row1.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+            return true;
+        }
+        else if (row1.getValue(2) == row2.getValue(1) && row2.getValue(1) == row3.getValue(0)
+                && row1.getValue(2) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+            return true;
+        }
         return false;
     }
 
@@ -103,7 +187,7 @@ public class Board {
         for(int i = 0; i < availablePoints.size(); i++) {
             if(availablePoints.get(i).getRow() == play.getRow() &&
                     availablePoints.get(i).getColumn() == play.getColumn()) {
-                availablePoints.remove(play);
+                availablePoints.remove(i);
                 playedPoints.add(play);
                 Row r = boardList.get(play.getRow());
                 r.setValue(play.getColumn(), playerType.getValue());
@@ -118,12 +202,15 @@ public class Board {
      * @param removePlay remove the play.
      */
     public void removeAMove(Point removePlay) {
-        if (playedPoints.contains(removePlay)) {
-            playedPoints.remove(removePlay);
-            availablePoints.add(removePlay);
-            Row r = boardList.get(removePlay.getRow());
-            r.setValue(removePlay.getColumn(), PlayerType.NO_ONE.getValue());
-            boardList.set(removePlay.getRow(), r);
+        for(int i = 0; i < playedPoints.size(); i++) {
+            if(playedPoints.get(i).getColumn() == removePlay.getColumn() &&
+            playedPoints.get(i).getRow() == removePlay.getRow()) {
+                playedPoints.remove(i);
+                availablePoints.add(removePlay);
+                Row r = boardList.get(removePlay.getRow());
+                r.setValue(removePlay.getColumn(), PlayerType.NO_ONE.getValue());
+                boardList.set(removePlay.getRow(), r);
+            }
         }
     }
 
