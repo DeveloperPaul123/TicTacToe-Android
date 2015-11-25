@@ -77,11 +77,11 @@ public class Board {
                     && row1.getValue(0) == PlayerType.USER.getValue()) {
                 return true;
             }
-            if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
+            else if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
                     && row2.getValue(0) == PlayerType.USER.getValue()) {
                 return true;
             }
-            if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
+            else if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
                     && row3.getValue(0) == PlayerType.USER.getValue()) {
                 return true;
             }
@@ -90,11 +90,11 @@ public class Board {
                     && row1.getValue(i) == PlayerType.USER.getValue()) {
                 return true;
             }
-            if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
+            else if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
                     && row1.getValue(i+1) == PlayerType.USER.getValue()) {
                 return true;
             }
-            if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
+            else if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
                     && row1.getValue(i+2) == PlayerType.USER.getValue()) {
                 return true;
             }
@@ -102,8 +102,8 @@ public class Board {
 
         //check diagonals.
         if(row1.getValue(0) == row2.getValue(1) && row2.getValue(1) == row3.getValue(2)
-                && row1.getValue(0) == PlayerType.USER.getValue()) {
-            return true;
+                    && row1.getValue(0) == PlayerType.USER.getValue()) {
+                return true;
         }
         else if (row1.getValue(2) == row2.getValue(1) && row2.getValue(1) == row3.getValue(0)
                 && row1.getValue(2) == PlayerType.USER.getValue()) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.developerpaul123.tictactoe.gameobjects.Board;
 import com.developerpaul123.tictactoe.gameobjects.ComputerMove;
 import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
     MaterialFloatingActionButton fab;
 
     MinimaxAI computerPlayer;
+    boolean gameOver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
             public void onClick(View view) {
                 board.clearBoard();
                 ticTacToeView.setBoard(board);
+                gameOver = false;
             }
         });
 
@@ -41,31 +44,53 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
         ticTacToeView.setBoard(board);
         ticTacToeView.setTicTacToeListener(this);
         computerPlayer = new MinimaxAI();
+        gameOver = false;
     }
 
     @Override
     public void onSquareClicked(int row, int col) {
         //For now just play something.
-        board.addAMove(new Point(row, col), PlayerType.USER);
-        if(board.isATie()) {
-
+        if(!gameOver) {
+            board.addAMove(new Point(row, col), PlayerType.USER);
         }
-        else if(board.hasXWon()) {
-
-
+        checkForGameOver();
+        if(!gameOver) {
+            ComputerMove move = computerPlayer.getBestMove(board,
+                    computerPlayer.getPlayerType());
+            board.addAMove(move.point(), PlayerType.getType(computerPlayer.getPlayerType()));
+            checkForGameOver();
         }
-        else if(board.hasOWon()) {
+        ticTacToeView.setBoard(board);
 
-        }
-        else {
-            board.addAMove(computerPlayer.getBestMove(board, computerPlayer.getPlayerType()).point(), PlayerType.COMPUTER_MINIMAX);
-            ticTacToeView.setBoard(board);
-        }
 //        ticTacToeView.addAMove(new Point(row, col), PlayerType.USER);
-
 //        new GetComputerMoveTask().execute(board);
     }
 
+    /**
+     * Check to see if the game is over.
+     */
+    public void checkForGameOver() {
+        if(board.isATie()) {
+            gameOver = true;
+            showDialog("Cat's game!");
+        }
+        else if(board.hasXWon()) {
+            gameOver = true;
+            showDialog("You won!");
+        }
+        else if(board.hasOWon()) {
+            gameOver = true;
+            showDialog("You lost!");
+        }
+    }
+
+    public void showDialog(String message) {
+       new MaterialDialog.Builder(this)
+               .title("Game Over")
+               .content(message)
+               .positiveText("Restart")
+               .show();
+    }
     @Override
     public void onMoveAdded(Board b) {
         new GetComputerMoveTask().execute(b);

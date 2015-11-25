@@ -17,20 +17,22 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
     @Override
     public ComputerMove getBestMove(Board input, Integer type) {
        Board b = input;
+
         //first check for base cases. We have three:
         // 1: there was a tie.
         // 2: x won
         // 3: o won
         // we may have more later on (may have 3 players total).
-        if(b.isATie()) {
-            return new ComputerMove(0);
-        }
-        else if(b.hasOWon()) {
+
+        if(b.hasOWon()) {
             //we won!
             return new ComputerMove(100);
         }
         else if(b.hasXWon()) {
             return new ComputerMove(-100);
+        }
+        else if(b.isATie()) {
+            return new ComputerMove(0);
         }
 
         //now we move on with the algorithm. Create a holder for all the moves we're going to make.
@@ -51,7 +53,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
             if(type == PlayerType.USER.getValue()) {
                 //the user played so we run this recursively but now the next move is us (i.e. the
                 //computer player)
-                move.setScore(getBestMove(b, getPlayerType()).score());
+                move.setScore(getBestMove(b, PlayerType.COMPUTER_MINIMAX.getValue()).score());
             }
             else if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
                 //we just played, so now it's the users turn. Call the recursion with the users
@@ -85,8 +87,8 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
             int bestScore = 10000;
             for(int x = 0; x < myMoves.size(); x++) {
                 if(myMoves.get(x).score() < bestScore) {
-                    bestScore = myMoves.get(x).score();
-                    bestMove = x;
+                        bestScore = myMoves.get(x).score();
+                        bestMove = x;
                 }
             }
         }

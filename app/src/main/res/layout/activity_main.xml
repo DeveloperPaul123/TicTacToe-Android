@@ -9,7 +9,10 @@
     <com.developerpaul123.tictactoe.views.TicTacToeView
         android:id="@+id/tic_tac_toe_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/material_fab"
+        android:layout_alignEnd="@+id/material_fab" />
 
     <com.devpaul.materiallibrary.views.MaterialFloatingActionButton
         android:id="@+id/material_fab"

@@ -20,15 +20,15 @@ public enum PlayerType {
     public static PlayerType getType(int t) {
         switch (t) {
             case 0:
-                return NO_ONE;
+                return PlayerType.NO_ONE;
             case 1:
-                return USER;
+                return PlayerType.USER;
             case 2:
-                return COMPUTER_MINIMAX;
+                return PlayerType.COMPUTER_MINIMAX;
             case 3:
-                return COMPUTER_MCTS;
+                return PlayerType.COMPUTER_MCTS;
             default:
-                return NO_ONE;
+                return PlayerType.NO_ONE;
         }
     }
 }
