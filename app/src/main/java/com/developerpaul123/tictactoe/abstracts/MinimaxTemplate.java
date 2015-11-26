@@ -11,7 +11,7 @@ public abstract class MinimaxTemplate<T1, T2, T3> {
         playerType = param;
     }
 
-    public abstract T1 getBestMove(T3 input, T2 type);
+    public abstract T1 getBestMove(T3 input, T2 type, int depth);
 
     public T2 getPlayerType() {
         return playerType;

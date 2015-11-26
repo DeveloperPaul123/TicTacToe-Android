@@ -245,7 +245,7 @@ public class TicTacToeView extends View {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    board.addAMove(new Point(p.getRow(), p.getColumn()), PlayerType.USER);
+                    board.addAMove(new Point(p.getRow(), p.getColumn()), PlayerType.USER.getValue());
                     currentPath = null;
                     if(listener != null) {
                         listener.onMoveAdded(board);
@@ -273,7 +273,7 @@ public class TicTacToeView extends View {
                 public void onAnimationEnd(Animation animation) {
                     board.addAMove(new Point(p.getRow(), p.getColumn()),
                             playerType.getValue() == PlayerType.COMPUTER_MINIMAX.getValue() ?
-                                    PlayerType.COMPUTER_MINIMAX: PlayerType.COMPUTER_MCTS);
+                                    PlayerType.COMPUTER_MINIMAX.getValue(): PlayerType.COMPUTER_MCTS.getValue());
                     currentPath = null;
                     invalidate();
                 }

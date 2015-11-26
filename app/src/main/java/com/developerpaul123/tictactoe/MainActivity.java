@@ -51,13 +51,12 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
     public void onSquareClicked(int row, int col) {
         //For now just play something.
         if(!gameOver) {
-            board.addAMove(new Point(row, col), PlayerType.USER);
+            board.addAMove(new Point(row, col), PlayerType.USER.getValue());
         }
         checkForGameOver();
         if(!gameOver) {
-            ComputerMove move = computerPlayer.getBestMove(board,
-                    computerPlayer.getPlayerType());
-            board.addAMove(move.point(), PlayerType.COMPUTER_MINIMAX);
+            Point play = computerPlayer.performMove(board);
+            board.addAMove(play, PlayerType.COMPUTER_MINIMAX.getValue());
             checkForGameOver();
         }
         ticTacToeView.setBoard(board);
@@ -102,12 +101,12 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
         @Override
         protected ComputerMove doInBackground(Board... boards) {
             final Board b = boards[0];
-            return computerPlayer.getBestMove(b, computerPlayer.getPlayerType());
+            return computerPlayer.getBestMove(b, computerPlayer.getPlayerType(), 2);
         }
 
         @Override
         protected void onPostExecute(ComputerMove computerMove) {
-            board.addAMove(computerMove.point(), PlayerType.getType(computerPlayer.getPlayerType()));
+            board.addAMove(computerMove.point(), computerPlayer.getPlayerType());
 //            ticTacToeView.addAMove(computerMove.point(), PlayerType.getType(computerPlayer.getPlayerType()));
             ticTacToeView.setBoard(board);
         }

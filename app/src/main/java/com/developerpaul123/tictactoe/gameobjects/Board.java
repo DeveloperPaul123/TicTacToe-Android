@@ -52,6 +52,9 @@ public class Board {
         return columns;
     }
 
+    public boolean isGameOver() {
+        return hasOWon() || hasXWon() || isATie();
+    }
     /**
      * Check if there was a tie.
      * @return true if there was a tie, false otherwise.
@@ -119,13 +122,13 @@ public class Board {
      * @param play the play to add.
      * @param playerType who made the play.
      */
-    public void addAMove(Point play, PlayerType playerType) {
+    public void addAMove(Point play, int playerType) {
         for(int i = 0; i < availablePoints.size(); i++) {
             if(availablePoints.get(i).getRow() == play.getRow() &&
                     availablePoints.get(i).getColumn() == play.getColumn()) {
                 availablePoints.remove(i);
                 playedPoints.add(play);
-                board[play.getRow()][play.getColumn()] = playerType.getValue();
+                board[play.getRow()][play.getColumn()] = playerType;
                 break;
             }
         }
