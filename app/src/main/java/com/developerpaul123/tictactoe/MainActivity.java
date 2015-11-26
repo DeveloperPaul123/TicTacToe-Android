@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
         if(!gameOver) {
             ComputerMove move = computerPlayer.getBestMove(board,
                     computerPlayer.getPlayerType());
-            board.addAMove(move.point(), PlayerType.getType(computerPlayer.getPlayerType()));
+            board.addAMove(move.point(), PlayerType.COMPUTER_MINIMAX);
             checkForGameOver();
         }
         ticTacToeView.setBoard(board);
@@ -70,17 +70,18 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
      * Check to see if the game is over.
      */
     public void checkForGameOver() {
-        if(board.isATie()) {
-            gameOver = true;
-            showDialog("Cat's game!");
-        }
-        else if(board.hasXWon()) {
+
+        if(board.hasXWon()) {
             gameOver = true;
             showDialog("You won!");
         }
         else if(board.hasOWon()) {
             gameOver = true;
             showDialog("You lost!");
+        }
+        if(board.isATie()) {
+            gameOver = true;
+            showDialog("Cat's game!");
         }
     }
 

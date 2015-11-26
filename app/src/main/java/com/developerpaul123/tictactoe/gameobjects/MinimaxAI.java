@@ -16,85 +16,123 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
 
     @Override
     public ComputerMove getBestMove(Board input, Integer type) {
-       Board b = input;
 
-        //first check for base cases. We have three:
-        // 1: there was a tie.
-        // 2: x won
-        // 3: o won
-        // we may have more later on (may have 3 players total).
+        List<Point> availablePoints = getMoves(input);
 
-        if(b.hasOWon()) {
-            //we won!
-            return new ComputerMove(100);
-        }
-        else if(b.hasXWon()) {
-            return new ComputerMove(-100);
-        }
-        else if(b.isATie()) {
-            return new ComputerMove(0);
-        }
+        int bestScore = type == PlayerType.COMPUTER_MINIMAX.getValue() ? Integer.MIN_VALUE: Integer.MAX_VALUE;
+        int currentScore;
+        Point bestMove = new Point(-1, -1);
 
-        //now we move on with the algorithm. Create a holder for all the moves we're going to make.
-        List<ComputerMove> myMoves = new ArrayList<>();
-        //get the list of available places to play.
-        List<Point> availables = b.getAvailablePoints();
+        if(availablePoints.size() == 0) {
+            bestScore = evaluate(input);
+        } else {
+            for(int i = 0; i < availablePoints.size(); i++) {
+                //try the move with the current player.
+                Point move = availablePoints.get(i);
+                input.addAMove(move, PlayerType.getType(type));
 
-        //now we're going to go through all available moves.
-        for(int i = 0; i < availables.size(); i++) {
-            //create a new move.
-            ComputerMove move = new ComputerMove();
-            //set the point of the current move as the next available one.
-            move.setPoint(availables.get(i));
-
-            //add the move to the board.
-            b.addAMove(move.point(), PlayerType.getType(type));
-            //check for who is playing.
-            if(type == PlayerType.USER.getValue()) {
-                //the user played so we run this recursively but now the next move is us (i.e. the
-                //computer player)
-                move.setScore(getBestMove(b, PlayerType.COMPUTER_MINIMAX.getValue()).score());
-            }
-            else if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                //we just played, so now it's the users turn. Call the recursion with the users
-                //play.
-                move.setScore(getBestMove(b, PlayerType.USER.getValue()).score());
-            }
-
-            //remember the move we made and add it to our list of moves.
-            myMoves.add(move);
-
-            //remember to remove the play from the board.
-            b.removeAMove(move.point());
-        }
-
-        //now look for the best move.
-        int bestMove = 0;
-        //check for the player type first.
-        if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
-            int bestScore = -10000; //make sure this gets changed so make it really negative.
-            for(int j = 0; j < myMoves.size(); j++) {
-                //check for best score.
-                if(myMoves.get(j).score() > bestScore) {
-                    bestScore = myMoves.get(j).score();
-                    bestMove = j;
+                if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                    currentScore = getBestMove(input, PlayerType.USER.getValue()).score();
+                    if(currentScore > bestScore) {
+                        bestScore = currentScore;
+                        bestMove = move;
+                    }
                 }
-            }
-        }
-        //the user played.
-        else if(type == PlayerType.USER.getValue()) {
-            //now we flip it. We're looking for the most negative score.
-            int bestScore = 10000;
-            for(int x = 0; x < myMoves.size(); x++) {
-                if(myMoves.get(x).score() < bestScore) {
-                        bestScore = myMoves.get(x).score();
-                        bestMove = x;
+                else {
+                    currentScore = getBestMove(input, PlayerType.COMPUTER_MINIMAX.getValue()).score();
+                    if(currentScore < bestScore) {
+                        bestScore = currentScore;
+                        bestMove = move;
+                    }
                 }
+
+                input.removeAMove(move);
+            }
+
+        }
+
+        return new ComputerMove(bestMove, bestScore);
+    }
+
+    public List<Point> getMoves(Board b) {
+        if(b.hasOWon() || b.hasXWon()) {
+            return new ArrayList<Point>();
+        }
+        else {
+            return b.getAvailablePoints();
+        }
+    }
+
+    /** The heuristic evaluation function for the current board
+     @Return +100, +10, +1 for EACH 3-, 2-, 1-in-a-line for computer.
+     -100, -10, -1 for EACH 3-, 2-, 1-in-a-line for opponent.
+     0 otherwise   */
+    private int evaluate(Board b) {
+        int score = 0;
+        // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
+        score += evaluateLine(b, 0, 0, 0, 1, 0, 2);  // row 0
+        score += evaluateLine(b, 1, 0, 1, 1, 1, 2);  // row 1
+        score += evaluateLine(b, 2, 0, 2, 1, 2, 2);  // row 2
+        score += evaluateLine(b, 0, 0, 1, 0, 2, 0);  // col 0
+        score += evaluateLine(b, 0, 1, 1, 1, 2, 1);  // col 1
+        score += evaluateLine(b, 0, 2, 1, 2, 2, 2);  // col 2
+        score += evaluateLine(b, 0, 0, 1, 1, 2, 2);  // diagonal
+        score += evaluateLine(b, 0, 2, 1, 1, 2, 0);  // alternate diagonal
+        return score;
+    }
+
+    /** The heuristic evaluation function for the given line of 3 cells
+     @Return +100, +10, +1 for 3-, 2-, 1-in-a-line for computer.
+     -100, -10, -1 for 3-, 2-, 1-in-a-line for opponent.
+     0 otherwise */
+    private int evaluateLine(Board board, int row1, int col1, int row2, int col2, int row3, int col3) {
+        int score = 0;
+
+        // First cell
+        int[][] b = board.getBoard();
+        if (b[row1][col1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+            score = 1;
+        } else if (b[row1][col1] == PlayerType.USER.getValue()) {
+            score = -1;
+        }
+
+        // Second cell
+        if (b[row2][col2] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+            if (score == 1) {   // cell1 is mySeed
+                score = 10;
+            } else if (score == -1) {  // cell1 is oppSeed
+                return 0;
+            } else {  // cell1 is empty
+                score = 1;
+            }
+        } else if (b[row2][col2] == PlayerType.USER.getValue()) {
+            if (score == -1) { // cell1 is oppSeed
+                score = -10;
+            } else if (score == 1) { // cell1 is mySeed
+                return 0;
+            } else {  // cell1 is empty
+                score = -1;
             }
         }
 
-        //return the "best" move.
-        return myMoves.get(bestMove);
-
+        // Third cell
+        if (b[row3][col3] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+            if (score > 0) {  // cell1 and/or cell2 is mySeed
+                score *= 10;
+            } else if (score < 0) {  // cell1 and/or cell2 is oppSeed
+                return 0;
+            } else {  // cell1 and cell2 are empty
+                score = 1;
+            }
+        } else if (b[row3][col3] == PlayerType.USER.getValue()) {
+            if (score < 0) {  // cell1 and/or cell2 is oppSeed
+                score *= 10;
+            } else if (score > 1) {  // cell1 and/or cell2 is mySeed
+                return 0;
+            } else {  // cell1 and cell2 are empty
+                score = -1;
+            }
+        }
+        return score;
     }
 }

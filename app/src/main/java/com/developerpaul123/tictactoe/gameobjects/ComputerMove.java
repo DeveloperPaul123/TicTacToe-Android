@@ -18,7 +18,7 @@ public class ComputerMove {
     }
 
     public ComputerMove() {
-        this.score = 0;
+
     }
 
     public void setScore(int score) {

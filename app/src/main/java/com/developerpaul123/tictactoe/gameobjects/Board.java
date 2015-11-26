@@ -13,7 +13,7 @@ public class Board {
     private int columns;
     private List<Point> availablePoints;
     private List<Point> playedPoints;
-    private List<Row> boardList;
+    int board[][];
 
     /**
      * Constructor for the game board. Can have variable rows and columns.
@@ -25,15 +25,13 @@ public class Board {
         this.columns = cols;
         availablePoints = new ArrayList<>();
         playedPoints = new ArrayList<>();
-        boardList = new ArrayList<>();
+        board = new int[rows][cols];
         for(int i = 0; i < rows; i++) {
-            //add new rows.
-            Row r = new Row(cols);
-            boardList.add(r);
             //add available points.
             for(int j = 0; j < columns; j++) {
                 Point p = new Point(i, j);
                 availablePoints.add(p);
+                board[i][j] = PlayerType.NO_ONE.getValue();
             }
         }
     }
@@ -67,47 +65,16 @@ public class Board {
      * @return true if the x player won, false otherwise.
      */
     public boolean hasXWon() {
-        Row row1 = boardList.get(0);
-        Row row2 = boardList.get(1);
-        Row row3 = boardList.get(2);
-
-        //check rows and columns.
-        for(int i = 0; i < columns-2; i++) {
-            if(row1.getValue(i) == row1.getValue(i+1) && row1.getValue(i+1) == row1.getValue(i+2)
-                    && row1.getValue(0) == PlayerType.USER.getValue()) {
-                return true;
-            }
-            else if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
-                    && row2.getValue(0) == PlayerType.USER.getValue()) {
-                return true;
-            }
-            else if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
-                    && row3.getValue(0) == PlayerType.USER.getValue()) {
-                return true;
-            }
-
-            if(row1.getValue(i) == row2.getValue(i) && row2.getValue(i) == row3.getValue(i)
-                    && row1.getValue(i) == PlayerType.USER.getValue()) {
-                return true;
-            }
-            else if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
-                    && row1.getValue(i+1) == PlayerType.USER.getValue()) {
-                return true;
-            }
-            else if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
-                    && row1.getValue(i+2) == PlayerType.USER.getValue()) {
-                return true;
-            }
-        }
-
-        //check diagonals.
-        if(row1.getValue(0) == row2.getValue(1) && row2.getValue(1) == row3.getValue(2)
-                    && row1.getValue(0) == PlayerType.USER.getValue()) {
-                return true;
-        }
-        else if (row1.getValue(2) == row2.getValue(1) && row2.getValue(1) == row3.getValue(0)
-                && row1.getValue(2) == PlayerType.USER.getValue()) {
+        int USER = PlayerType.USER.getValue();
+        if ((board[0][0] == board[1][1] && board[0][0] == board[2][2] && board[0][0] == USER)
+                || (board[0][2] == board[1][1] && board[0][2] == board[2][0] && board[0][2] == USER)) {
             return true;
+        }
+        for (int i = 0; i < 3; ++i) {
+            if ((board[i][0] == board[i][1] && board[i][0] == board[i][2] && board[i][0] == USER)
+                    || (board[0][i] == board[1][i] && board[0][i] == board[2][i] && board[0][i] == USER)) {
+                return true;
+            }
         }
         return false;
     }
@@ -117,47 +84,16 @@ public class Board {
      * @return true if the O player won, false otherwise.
      */
     public boolean hasOWon() {
-        Row row1 = boardList.get(0);
-        Row row2 = boardList.get(1);
-        Row row3 = boardList.get(2);
-
-        //check rows and columns.
-        for(int i = 0; i < columns-2; i++) {
-            if(row1.getValue(i) == row1.getValue(i+1) && row1.getValue(i+1) == row1.getValue(i+2)
-                    && row1.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-            if(row2.getValue(i) == row2.getValue(i+1) && row2.getValue(i+1) == row2.getValue(i+2)
-                    && row2.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-            if(row3.getValue(i) == row3.getValue(i+1) && row3.getValue(i+1) == row3.getValue(i+2)
-                    && row3.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-
-            if(row1.getValue(i) == row2.getValue(i) && row2.getValue(i) == row3.getValue(i)
-                    && row1.getValue(i) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-            if(row1.getValue(i+1) == row2.getValue(i+1) && row2.getValue(i+1) == row3.getValue(i+1)
-                    && row1.getValue(i+1) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-            if(row1.getValue(i+2) == row2.getValue(i+2) && row2.getValue(i+2) == row3.getValue(i+2)
-                    && row1.getValue(i+2) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return true;
-            }
-        }
-
-        //check diagonals.
-        if(row1.getValue(0) == row2.getValue(1) && row2.getValue(1) == row3.getValue(2)
-                && row1.getValue(0) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+        int COMPUTER = PlayerType.COMPUTER_MINIMAX.getValue();
+        if ((board[0][0] == board[1][1] && board[0][0] == board[2][2] && board[0][0] == COMPUTER)
+                || (board[0][2] == board[1][1] && board[0][2] == board[2][0] && board[0][2] == COMPUTER)) {
             return true;
         }
-        else if (row1.getValue(2) == row2.getValue(1) && row2.getValue(1) == row3.getValue(0)
-                && row1.getValue(2) == PlayerType.COMPUTER_MINIMAX.getValue()) {
-            return true;
+        for (int i = 0; i < 3; ++i) {
+            if ((board[i][0] == board[i][1] && board[i][0] == board[i][2] && board[i][0] == COMPUTER)
+                    || (board[0][i] == board[1][i] && board[0][i] == board[2][i] && board[0][i] == COMPUTER)) {
+                return true;
+            }
         }
         return false;
     }
@@ -189,9 +125,8 @@ public class Board {
                     availablePoints.get(i).getColumn() == play.getColumn()) {
                 availablePoints.remove(i);
                 playedPoints.add(play);
-                Row r = boardList.get(play.getRow());
-                r.setValue(play.getColumn(), playerType.getValue());
-                boardList.set(play.getRow(), r);
+                board[play.getRow()][play.getColumn()] = playerType.getValue();
+                break;
             }
         }
 
@@ -202,14 +137,13 @@ public class Board {
      * @param removePlay remove the play.
      */
     public void removeAMove(Point removePlay) {
+        availablePoints.add(removePlay);
+        board[removePlay.getRow()][removePlay.getColumn()] = PlayerType.NO_ONE.getValue();
         for(int i = 0; i < playedPoints.size(); i++) {
             if(playedPoints.get(i).getColumn() == removePlay.getColumn() &&
             playedPoints.get(i).getRow() == removePlay.getRow()) {
                 playedPoints.remove(i);
-                availablePoints.add(removePlay);
-                Row r = boardList.get(removePlay.getRow());
-                r.setValue(removePlay.getColumn(), PlayerType.NO_ONE.getValue());
-                boardList.set(removePlay.getRow(), r);
+                break;
             }
         }
     }
@@ -221,18 +155,16 @@ public class Board {
         availablePoints.clear();
         playedPoints.clear();
         for (int i = 0; i < rows; i++) {
-            Row r = boardList.get(i);
             for (int j = 0; j < columns; j++) {
-                r.setValue(j, PlayerType.NO_ONE.getValue());
+                board[i][j] = PlayerType.NO_ONE.getValue();
                 availablePoints.add(new Point(i, j));
             }
-            boardList.set(i, r);
         }
 
     }
 
-    public List<Row> getBoardList() {
-        return this.boardList;
+    public int[][] getBoard() {
+        return this.board;
     }
 
 }

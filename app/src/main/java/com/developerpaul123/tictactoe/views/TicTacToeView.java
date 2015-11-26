@@ -14,9 +14,6 @@ import com.developerpaul123.tictactoe.R;
 import com.developerpaul123.tictactoe.gameobjects.Board;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
-import com.developerpaul123.tictactoe.gameobjects.Row;
-
-import java.util.List;
 
 /**
  * Created by Paul on 11/23/2015.
@@ -159,17 +156,16 @@ public class TicTacToeView extends View {
         }
 
         //draw current plays.
-        List<Row> boardState = board.getBoardList();
-        for(int z = 0; z < boardState.size(); z++) {
-            Row r = boardState.get(z);
-            for(int q = 0; q < r.getSize(); q++) {
-                if(r.getValue(q) == PlayerType.USER.getValue()) {
+        int b[][] = board.getBoard();
+        for(int z = 0; z < board.getRows(); z++) {
+            for(int q = 0; q < board.getColumns(); q++) {
+                if(b[z][q] == PlayerType.USER.getValue()) {
                     //x plays.
                     Path p = getXPath(rects[z][q]);
                     canvas.drawPath(p, xPaint);
                 }
-                else if(r.getValue(q) == PlayerType.COMPUTER_MCTS.getValue() ||
-                        r.getValue(q) == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                else if(b[z][q] == PlayerType.COMPUTER_MCTS.getValue() ||
+                        b[z][q] == PlayerType.COMPUTER_MINIMAX.getValue()) {
                     //o plays.
                     Path p = getOPath(rects[z][q]);
                     canvas.drawPath(p, oPaint);
