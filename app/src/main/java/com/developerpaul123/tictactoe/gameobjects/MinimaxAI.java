@@ -16,11 +16,77 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
         super(PlayerType.COMPUTER_MINIMAX.getValue());
     }
 
+    /**
+     * Performs the best possible move for this player on the given board.
+     * @param b the current board.
+     * @return a Point that corresponds to the AI's move on the board.
+     */
     public Point performMove(Board b) {
-        ComputerMove move = getBestMove(b, getPlayerType(), 9);
+//        ComputerMove move = getBestMove(b, getPlayerType(), 9);
+        ComputerMove move = minimax(b, getPlayerType());
         Log.i("Computer", "Score: " + move.score());
         return move.point();
     }
+
+    public ComputerMove minimax(Board board, int type) {
+
+        List<Point> availables = board.getAvailablePoints();
+        ComputerMove best;
+
+        if(board.isGameOver()) {
+            if(board.hasOWon()) {
+                return new ComputerMove(1000);
+            }
+            else if(board.hasXWon()) {
+                return new ComputerMove(-1000);
+            }
+            else {
+                return new ComputerMove(0);
+            }
+        }
+
+        List<ComputerMove> mMoves = new ArrayList<>();
+
+        for(int i = 0; i < availables.size(); i++) {
+            Point p = availables.get(i);
+            board.addAMove(p, type);
+            ComputerMove move = new ComputerMove();
+            if(type == PlayerType.USER.getValue()) {
+                move = minimax(board, PlayerType.COMPUTER_MINIMAX.getValue());
+            }
+            else if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                move = minimax(board, PlayerType.USER.getValue());
+            }
+            move.setPoint(p);
+            mMoves.add(move);
+            board.removeAMove(p);
+        }
+
+        int bestScore = type == PlayerType.COMPUTER_MINIMAX.getValue() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int bestPos = 0;
+        for(int j = 0; j < mMoves.size(); j++) {
+            ComputerMove move = mMoves.get(j);
+            switch (type) {
+                //computer
+                case 2:
+                    if(move.score() > bestScore) {
+                        bestScore = move.score();
+                        bestPos = j;
+                    }
+                    break;
+                //user
+                case 1:
+                    if(move.score() < bestScore) {
+                        bestScore = move.score();
+                        bestPos = j;
+                    }
+                    break;
+            }
+        }
+
+        return mMoves.get(bestPos);
+    }
+
     @Override
     public ComputerMove getBestMove(final Board board, Integer type, int depth) {
 
@@ -61,8 +127,11 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
         return new ComputerMove(bestPlay, bestScore);
     }
 
-    /** Find all valid next moves.
-     Return List of moves in int[2] of {row, col} or empty list if gameover */
+    /**
+     * Get a list of all possible, valid moves. Returns an empty list if the game is over.
+     * @param b the current board.
+     * @return a List of Point objects, empty if the game is over.
+     */
     private List<Point> generateMoves(Board b) {
         List<Point> nextMoves = new ArrayList<Point>(); // allocate List
 
@@ -73,10 +142,13 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
         return b.getAvailablePoints();
     }
 
-    /** The heuristic evaluation function for the current board
-     @Return +100, +10, +1 for EACH 3-, 2-, 1-in-a-line for computer.
-     -100, -10, -1 for EACH 3-, 2-, 1-in-a-line for opponent.
-     0 otherwise   */
+
+    /**
+     * Heuristic score for the current board. Wins are heavily favored,
+     * then blocks, then forks, then 1 or 2 in a row with an empty space.
+     * @param b the current board.
+     * @return the total score for a given player.
+     */
     private int evaluate(Board b) {
         int score = 0;
         // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
@@ -112,62 +184,14 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
      */
     private int evaluateWin(Board board, int row1, int col1, int row2, int col2, int row3, int col3) {
         if(board.hasOWon()) {
-            return 150;
+            return 500;
         }
         else if(board.hasXWon()) {
-            return -150;
+            return -500;
         }
-        else if(board.isATie()) {
+        else {
             return 0;
         }
-        int[][] b = board.getBoard();
-        int[] values = {b[row1][col1], b[row2][col2], b[row3][col3]};
-
-        if(values[0] == values[1] && values[2] != values[0]) {
-            if(values[0] == PlayerType.USER.getValue()) {
-                return -75;
-            }
-            else if(values[0] == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return 75;
-            }
-        }
-
-        if(values[1] == values[2] && values[1] != values[0]) {
-            if(values[1] == PlayerType.USER.getValue()) {
-                return -75;
-            }
-            else if(values[1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return 75;
-            }
-        }
-
-        if(values[0] != values[1] && values[0] != values[2]) {
-            if(values[0] == PlayerType.USER.getValue() && values[1] == PlayerType.NO_ONE.getValue()) {
-                return -30;
-            }
-            else if(values[0] == PlayerType.COMPUTER_MINIMAX.getValue() && values[1] == PlayerType.NO_ONE.getValue()) {
-                return 30;
-            }
-        }
-
-        if(values[1] != values[0] && values[1] != values[2]) {
-            if(values[1] == PlayerType.USER.getValue() && values[0] == PlayerType.NO_ONE.getValue()) {
-                return -30;
-            }
-            else if(values[1] == PlayerType.COMPUTER_MINIMAX.getValue() && values[0] == PlayerType.NO_ONE.getValue()) {
-                return 30;
-            }
-        }
-
-        if(values[2] != values[1] && values[2] != values[0]) {
-            if(values[2] == PlayerType.USER.getValue() && values[0] == PlayerType.NO_ONE.getValue()) {
-                return -30;
-            }
-            else if(values[2] == PlayerType.COMPUTER_MINIMAX.getValue() && values[0] == PlayerType.NO_ONE.getValue()) {
-                return 30;
-            }
-        }
-        return 0;
     }
 
     /**
@@ -184,37 +208,58 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
     private int evaluateBlock(Board b, int row1, int col1, int row2, int col2, int row3, int col3) {
         int[][] board = b.getBoard();
         int[] values  = {board[row1][col1], board[row2][col2], board[row3][col3]};
-
+        int score = 950;
         //check for blocks.
+
+        //positions 0 and 1 are the same, position 2 isn't.
         if(values[0] == values[1] && values[0] != values[2] && values[2] != PlayerType.NO_ONE.getValue()
                 && values[0] != PlayerType.NO_ONE.getValue()) {
             if(values[2] == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return 100;
+                return score;
             }
             else if(values[2] == PlayerType.USER.getValue()) {
-                return -100;
+                return -1*score;
             }
         }
 
+        //positions 1 and 2 are the same, position 0 isn't.
         else if(values[1] == values[2] && values[1] != values[0] && values[0] != PlayerType.NO_ONE.getValue()
                 && values[1] != PlayerType.NO_ONE.getValue()) {
             if(values[0] == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return 100;
+                return score;
             }
             else if(values[0] == PlayerType.USER.getValue()) {
-                return -100;
+                return -1*score;
             }
         }
 
+        //positions 0 and 2 are the same middle value (position 1) isn't.
         else if(values[0] == values[2] && values[0] != values[1] && values[1] != PlayerType.NO_ONE.getValue()
                 && values[0] != PlayerType.NO_ONE.getValue()) {
             if(values[1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                return 100;
+                return score;
             }
             else if(values[1] == PlayerType.USER.getValue()) {
-                return -100;
+                return -1*score;
             }
         }
+
+        //no blocks so return 0.
+        return 0;
+    }
+
+    /**
+     * Evaluate the board and get a score based on if there is a fork made.
+     * @param b
+     * @param row1
+     * @param col1
+     * @param row2
+     * @param col2
+     * @param row3
+     * @param col3
+     * @return
+     */
+    private int evaluateFork(Board b, int row1, int col1, int row2, int col2, int row3, int col3) {
 
         return 0;
     }
