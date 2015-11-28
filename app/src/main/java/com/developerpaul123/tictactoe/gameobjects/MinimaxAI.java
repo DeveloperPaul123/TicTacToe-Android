@@ -22,16 +22,21 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
      * @return a Point that corresponds to the AI's move on the board.
      */
     public Point performMove(Board b) {
-//        ComputerMove move = getBestMove(b, getPlayerType(), 9);
-        ComputerMove move = minimax(b, getPlayerType());
+        ComputerMove move = getBestMove(b, getPlayerType(), 1);
+//        ComputerMove move = minimax(b, getPlayerType());
         Log.i("Computer", "Score: " + move.score());
         return move.point();
     }
 
+    /**
+     * Pure minimax algorithm. This is a perfect AI player.
+     * @param board the current board.
+     * @param type the player type.
+     * @return the best ComputerMove.
+     */
     public ComputerMove minimax(Board board, int type) {
 
         List<Point> availables = board.getAvailablePoints();
-        ComputerMove best;
 
         if(board.isGameOver()) {
             if(board.hasOWon()) {
@@ -168,6 +173,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
         score += evaluateBlock(b, 0, 2, 1, 2, 2, 2);  // col 2
         score += evaluateBlock(b, 0, 0, 1, 1, 2, 2);  // diagonal
         score += evaluateBlock(b, 0, 2, 1, 1, 2, 0);  // alternate diagonal
+        score += evaluateFork(b);
         return score;
     }
 
@@ -184,10 +190,10 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
      */
     private int evaluateWin(Board board, int row1, int col1, int row2, int col2, int row3, int col3) {
         if(board.hasOWon()) {
-            return 500;
+            return 1000;
         }
         else if(board.hasXWon()) {
-            return -500;
+            return -1000;
         }
         else {
             return 0;
@@ -208,7 +214,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
     private int evaluateBlock(Board b, int row1, int col1, int row2, int col2, int row3, int col3) {
         int[][] board = b.getBoard();
         int[] values  = {board[row1][col1], board[row2][col2], board[row3][col3]};
-        int score = 950;
+        int score = 500;
         //check for blocks.
 
         //positions 0 and 1 are the same, position 2 isn't.
@@ -250,16 +256,46 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board > {
 
     /**
      * Evaluate the board and get a score based on if there is a fork made.
-     * @param b
-     * @param row1
-     * @param col1
-     * @param row2
-     * @param col2
-     * @param row3
-     * @param col3
+     * @param b the current board.
      * @return
      */
-    private int evaluateFork(Board b, int row1, int col1, int row2, int col2, int row3, int col3) {
+    private int evaluateFork(Board b) {
+        //check for forks.
+
+        //Split fork with one move in the center.
+        int[][] board = b.getBoard();
+        if(board[0][0] == board[1][1] && board[0][0] == board[0][2]) {
+            if(board[0][0] == PlayerType.USER.getValue()) {
+                return -250;
+            }
+            else if(board[0][0] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return 250;
+            }
+        }
+        else if(board[1][1] == board[0][2] && board[1][1] == board[2][2]) {
+            if(board[1][1] == PlayerType.USER.getValue()) {
+                return -250;
+            }
+            else if(board[1][1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return 250;
+            }
+        }
+        else if(board[1][1] == board[0][0] && board[1][1] == board[2][0]) {
+            if(board[1][1] == PlayerType.USER.getValue()) {
+                return -250;
+            }
+            else if(board[1][1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return 250;
+            }
+        }
+        else if(board[1][1] == board[2][0] && board[1][1] == board[2][2]) {
+            if(board[1][1] == PlayerType.USER.getValue()) {
+                return -250;
+            }
+            else if(board[1][1] == PlayerType.COMPUTER_MINIMAX.getValue()) {
+                return 250;
+            }
+        }
 
         return 0;
     }

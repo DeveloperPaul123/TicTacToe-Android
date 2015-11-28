@@ -106,7 +106,15 @@ public class Board {
      * @return {@code List} of available, playable points.
      */
     public List<Point> getAvailablePoints() {
-        return availablePoints;
+        List<Point> available = new ArrayList<>();
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < columns; j++) {
+                if(board[i][j] == PlayerType.NO_ONE.getValue()) {
+                    available.add(new Point(i, j));
+                }
+            }
+        }
+        return available;
     }
 
     /**
@@ -114,7 +122,15 @@ public class Board {
      * @return
      */
     public List<Point> getPlayedPoints() {
-        return playedPoints;
+        List<Point> played = new ArrayList<>();
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < columns; j++) {
+                if(board[i][j] != PlayerType.NO_ONE.getValue()) {
+                    played.add(new Point(i, j));
+                }
+            }
+        }
+        return played;
     }
 
     /**
