@@ -122,7 +122,7 @@ public class TicTacToeView extends View {
 
         animationPaint = new Paint(xPaint);
 
-        board = new ClassicBoard(3, 3);
+        board = new ClassicBoard();
         rects = new RectF[3][3];
     }
 
@@ -139,7 +139,9 @@ public class TicTacToeView extends View {
         for(int i = 0; i < rows; i++) {
             canvas.drawLine(8.0f, ((i/(rows-1)) * splitHeight) + splitHeight,
                     width - 8.0f, ((i/(rows-1)) * splitHeight) + splitHeight, mainPaint);
+            //get rectangles.
             for(int u = 0; u < cols; u++) {
+                //try to take into account the paint stroke size and add some padding.
                 RectF rect = new RectF();
                 float left = u * splitWidth;
                 float right = left + splitWidth;
@@ -207,6 +209,12 @@ public class TicTacToeView extends View {
         int parentwidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
         int size = Math.min(parentHeight, parentwidth);
+        mainPaintStrokeSize = size * (0.05f * (board.getRows()/3));
+        xoPaintStrokeSize = size * (0.05f * (board.getRows()/3));
+        mainPaint.setStrokeWidth(mainPaintStrokeSize);
+        xPaint.setStrokeWidth(xoPaintStrokeSize);
+        oPaint.setStrokeWidth(xoPaintStrokeSize);
+        squarePadding = (xoPaintStrokeSize/2) + (mainPaintStrokeSize/2) + 16.0f;
         this.setMeasuredDimension(size, size);
     }
 
@@ -225,6 +233,7 @@ public class TicTacToeView extends View {
     public void setBoard(Board board) {
         this.board = board;
         this.currentPath = null;
+        this.rects = new RectF[board.getRows()][board.getColumns()];
         invalidate();
     }
 

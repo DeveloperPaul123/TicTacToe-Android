@@ -27,8 +27,8 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @return a Point that corresponds to the AI's move on the board.
      */
     public Point performMove(ClassicBoard b) {
-        ComputerMove move = getBestMove(b, getPlayerType(), 1);
-//        ComputerMove move = minimax(b, getPlayerType());
+//        ComputerMove move = getBestMove(b, getPlayerType(), 1);
+        ComputerMove move = minimax(b, getPlayerType());
         Log.i("Computer", "Score: " + move.score());
         return move.point();
     }
@@ -72,6 +72,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
             classicBoard.removeAMove(p);
         }
 
+        //get the best move for the respective player.
         int bestScore = type == PlayerType.COMPUTER_MINIMAX.getValue() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         int bestPos = 0;
         for(int j = 0; j < mMoves.size(); j++) {

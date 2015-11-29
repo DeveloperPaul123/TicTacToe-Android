@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
 import com.developerpaul123.tictactoe.views.TicTacToeView;
 import com.devpaul.materiallibrary.views.MaterialFlatButton;
@@ -36,8 +37,33 @@ public class MainMenu extends AppCompatActivity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenu.this, ClassicGameActivity.class);
-                startActivity(intent);
+                new MaterialDialog.Builder(MainMenu.this)
+                        .title("Play Type")
+                        .items(R.array.play_type_values)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                switch (which) {
+                                    case 0:
+                                        Intent intent = new Intent(MainMenu.this, ClassicGameActivity.class);
+                                        dialog.dismiss();
+                                        startActivity(intent);
+                                        break;
+                                    case 1:
+                                        Intent intent1 = new Intent(MainMenu.this, FourByFourGameActivity.class);
+                                        dialog.dismiss();
+                                        startActivity(intent1);
+                                        break;
+                                }
+                                return true;
+                            }
+                        })
+                        .positiveText("Ok")
+                        .show();
             }
         });
 

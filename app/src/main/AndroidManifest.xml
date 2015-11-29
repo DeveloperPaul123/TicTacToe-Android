@@ -17,6 +17,7 @@
         </activity>
 
         <activity android:name=".ClassicGameActivity" android:configChanges="orientation|keyboardHidden|keyboard"/>
+        <activity android:name=".FourByFourGameActivity" android:configChanges="orientation|keyboardHidden|keyboard"/>
 
     </application>
 </manifest>

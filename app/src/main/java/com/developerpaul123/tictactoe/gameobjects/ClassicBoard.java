@@ -10,11 +10,9 @@ public class ClassicBoard extends Board {
 
     /**
      * Constructor for the game board. Can have variable rows and columns.
-     * @param rows the number of rows.
-     * @param cols the number of columns.
      */
-    public ClassicBoard(int rows, int cols) {
-        super(rows, cols);
+    public ClassicBoard() {
+        super(3, 3);
     }
 
     @Override

@@ -1,35 +1,27 @@
 package com.developerpaul123.tictactoe;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.developerpaul123.tictactoe.abstracts.AbstractGameActivity;
 import com.developerpaul123.tictactoe.abstracts.Board;
 import com.developerpaul123.tictactoe.gameobjects.ClassicBoard;
 import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
 import com.developerpaul123.tictactoe.views.TicTacToeView;
-import com.devpaul.materiallibrary.views.MaterialFloatingActionButton;
 
 /**
  * Class tic tac toe activity. 
  */
-public class ClassicGameActivity extends AppCompatActivity implements TicTacToeView.TicTacToeListener{
+public class ClassicGameActivity extends AbstractGameActivity implements TicTacToeView.TicTacToeListener{
 
     ClassicBoard classicBoard;
-    TicTacToeView ticTacToeView;
-    MaterialFloatingActionButton fab;
     MinimaxAI computerPlayer;
     boolean gameOver;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.classic_game_activity);
-        ticTacToeView = (TicTacToeView) findViewById(R.id.tic_tac_toe_view);
-        fab = (MaterialFloatingActionButton) findViewById(R.id.material_fab);
+    public void init() {
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,7 +33,7 @@ public class ClassicGameActivity extends AppCompatActivity implements TicTacToeV
         });
 
         //create a new game classicBoard. Just trying 3x3 for now.
-        classicBoard = new ClassicBoard(3, 3);
+        classicBoard = new ClassicBoard();
         ticTacToeView.setBoard(classicBoard);
         ticTacToeView.setTicTacToeListener(this);
         computerPlayer = new MinimaxAI();
