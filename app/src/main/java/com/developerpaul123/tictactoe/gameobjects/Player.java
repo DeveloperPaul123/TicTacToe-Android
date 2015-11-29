@@ -17,10 +17,10 @@ public abstract class Player {
 
     /**
      * Should be overridden to get the next move.
-     * @param curBoard the current board.
+     * @param curClassicBoard the current board.
      * @return Object can be a Point or generic move.
      */
-    public abstract Object getNextMove(Board curBoard);
+    public abstract Object getNextMove(ClassicBoard curClassicBoard);
 
     /**
      * Return this players playertype.

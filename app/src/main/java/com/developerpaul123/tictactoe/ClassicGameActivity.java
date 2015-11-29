@@ -1,47 +1,48 @@
 package com.developerpaul123.tictactoe;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.developerpaul123.tictactoe.gameobjects.Board;
-import com.developerpaul123.tictactoe.gameobjects.ComputerMove;
+import com.developerpaul123.tictactoe.abstracts.Board;
+import com.developerpaul123.tictactoe.gameobjects.ClassicBoard;
 import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
 import com.developerpaul123.tictactoe.views.TicTacToeView;
 import com.devpaul.materiallibrary.views.MaterialFloatingActionButton;
 
-public class MainActivity extends AppCompatActivity implements TicTacToeView.TicTacToeListener{
+/**
+ * Class tic tac toe activity. 
+ */
+public class ClassicGameActivity extends AppCompatActivity implements TicTacToeView.TicTacToeListener{
 
-    Board board;
+    ClassicBoard classicBoard;
     TicTacToeView ticTacToeView;
     MaterialFloatingActionButton fab;
-
     MinimaxAI computerPlayer;
     boolean gameOver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.classic_game_activity);
         ticTacToeView = (TicTacToeView) findViewById(R.id.tic_tac_toe_view);
         fab = (MaterialFloatingActionButton) findViewById(R.id.material_fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                board.clearBoard();
-                ticTacToeView.setBoard(board);
+                classicBoard.clearBoard();
+                ticTacToeView.setBoard(classicBoard);
                 gameOver = false;
             }
         });
 
-        //create a new game board. Just trying 3x3 for now.
-        board = new Board(3, 3);
-        ticTacToeView.setBoard(board);
+        //create a new game classicBoard. Just trying 3x3 for now.
+        classicBoard = new ClassicBoard(3, 3);
+        ticTacToeView.setBoard(classicBoard);
         ticTacToeView.setTicTacToeListener(this);
         computerPlayer = new MinimaxAI();
         gameOver = false;
@@ -51,18 +52,20 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
     public void onSquareClicked(int row, int col) {
         //For now just play something.
         if(!gameOver) {
-            board.addAMove(new Point(row, col), PlayerType.USER.getValue());
+            classicBoard.addAMove(new Point(row, col), PlayerType.USER.getValue());
         }
         checkForGameOver();
         if(!gameOver) {
-            Point play = computerPlayer.performMove(board);
-            board.addAMove(play, PlayerType.COMPUTER_MINIMAX.getValue());
+            Point play = computerPlayer.performMove(classicBoard);
+            classicBoard.addAMove(play, PlayerType.COMPUTER_MINIMAX.getValue());
             checkForGameOver();
         }
-        ticTacToeView.setBoard(board);
+        ticTacToeView.setBoard(classicBoard);
+    }
 
-//        ticTacToeView.addAMove(new Point(row, col), PlayerType.USER);
-//        new GetComputerMoveTask().execute(board);
+    @Override
+    public void onMoveAdded(Board b) {
+
     }
 
     /**
@@ -70,45 +73,31 @@ public class MainActivity extends AppCompatActivity implements TicTacToeView.Tic
      */
     public void checkForGameOver() {
 
-        if(board.hasXWon()) {
+        if(classicBoard.hasXWon()) {
             gameOver = true;
             showDialog("You won!");
         }
-        else if(board.hasOWon()) {
+        else if(classicBoard.hasOWon()) {
             gameOver = true;
             showDialog("You lost!");
         }
-        if(board.isATie()) {
+        if(classicBoard.isATie()) {
             gameOver = true;
             showDialog("Cat's game!");
         }
     }
 
-    public void showDialog(String message) {
+    /**
+     * Shows a dialog with a given message.
+     * @param message the message to show.
+     */
+    private void showDialog(String message) {
        new MaterialDialog.Builder(this)
                .title("Game Over")
                .content(message)
                .positiveText("Restart")
                .show();
     }
-    @Override
-    public void onMoveAdded(Board b) {
-        new GetComputerMoveTask().execute(b);
-    }
 
-    private class GetComputerMoveTask extends AsyncTask<Board, Void, ComputerMove> {
 
-        @Override
-        protected ComputerMove doInBackground(Board... boards) {
-            final Board b = boards[0];
-            return computerPlayer.getBestMove(b, computerPlayer.getPlayerType(), 2);
-        }
-
-        @Override
-        protected void onPostExecute(ComputerMove computerMove) {
-            board.addAMove(computerMove.point(), computerPlayer.getPlayerType());
-//            ticTacToeView.addAMove(computerMove.point(), PlayerType.getType(computerPlayer.getPlayerType()));
-            ticTacToeView.setBoard(board);
-        }
-    }
 }

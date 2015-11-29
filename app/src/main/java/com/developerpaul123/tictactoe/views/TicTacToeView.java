@@ -11,7 +11,8 @@ import android.view.View;
 import android.view.animation.Animation;
 
 import com.developerpaul123.tictactoe.R;
-import com.developerpaul123.tictactoe.gameobjects.Board;
+import com.developerpaul123.tictactoe.abstracts.Board;
+import com.developerpaul123.tictactoe.gameobjects.ClassicBoard;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
 
@@ -121,7 +122,7 @@ public class TicTacToeView extends View {
 
         animationPaint = new Paint(xPaint);
 
-        board = new Board(3, 3);
+        board = new ClassicBoard(3, 3);
         rects = new RectF[3][3];
     }
 
@@ -223,7 +224,6 @@ public class TicTacToeView extends View {
      */
     public void setBoard(Board board) {
         this.board = board;
-
         this.currentPath = null;
         invalidate();
     }
@@ -273,7 +273,7 @@ public class TicTacToeView extends View {
                 public void onAnimationEnd(Animation animation) {
                     board.addAMove(new Point(p.getRow(), p.getColumn()),
                             playerType.getValue() == PlayerType.COMPUTER_MINIMAX.getValue() ?
-                                    PlayerType.COMPUTER_MINIMAX.getValue(): PlayerType.COMPUTER_MCTS.getValue());
+                                    PlayerType.COMPUTER_MINIMAX.getValue() : PlayerType.COMPUTER_MCTS.getValue());
                     currentPath = null;
                     invalidate();
                 }
