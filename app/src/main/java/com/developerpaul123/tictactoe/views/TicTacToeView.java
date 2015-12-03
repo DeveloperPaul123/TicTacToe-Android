@@ -70,6 +70,8 @@ public class TicTacToeView extends View {
      */
     private float squarePadding, mainPaintStrokeSize, xoPaintStrokeSize;
 
+    private int parentWidth, parentHeight, size;
+
     /**
      * The current path to animate
      */
@@ -137,8 +139,10 @@ public class TicTacToeView extends View {
 
         //draw horizontal lines.
         for(int i = 0; i < rows; i++) {
-            canvas.drawLine(8.0f, ((i/(rows-1)) * splitHeight) + splitHeight,
-                    width - 8.0f, ((i/(rows-1)) * splitHeight) + splitHeight, mainPaint);
+            if(i < rows-1) {
+                canvas.drawLine(8.0f, (i * splitHeight) + splitHeight,
+                        width - 8.0f, (i * splitHeight) + splitHeight, mainPaint);
+            }
             //get rectangles.
             for(int u = 0; u < cols; u++) {
                 //try to take into account the paint stroke size and add some padding.
@@ -153,9 +157,9 @@ public class TicTacToeView extends View {
         }
 
         //draw vertical lines.
-        for(int j = 0; j < cols; j++) {
-            canvas.drawLine(((j/(cols-1))*splitWidth) + splitWidth, 8.0f,
-                    ((j/(cols-1))*splitWidth) + splitWidth, height - 8.0f, mainPaint);
+        for(int j = 0; j < cols-1; j++) {
+            canvas.drawLine((j*splitWidth) + splitWidth, 8.0f,
+                    (j*splitWidth) + splitWidth, height - 8.0f, mainPaint);
         }
 
         //draw current plays.
@@ -206,9 +210,9 @@ public class TicTacToeView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int parentwidth = MeasureSpec.getSize(widthMeasureSpec);
-        int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-        int size = Math.min(parentHeight, parentwidth);
+        parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+        size = Math.min(parentHeight, parentWidth);
         mainPaintStrokeSize = size * (0.05f * (board.getRows()/3));
         xoPaintStrokeSize = size * (0.05f * (board.getRows()/3));
         mainPaint.setStrokeWidth(mainPaintStrokeSize);
@@ -234,6 +238,25 @@ public class TicTacToeView extends View {
         this.board = board;
         this.currentPath = null;
         this.rects = new RectF[board.getRows()][board.getColumns()];
+        //draw horizontal lines.
+        int rows = board.getRows();
+        int cols = board.getColumns();
+        float splitHeight = size/rows;
+        float splitWidth = size/cols;
+
+        for(int i = 0; i < rows; i++) {
+            //get rectangles.
+            for(int u = 0; u < cols; u++) {
+                //try to take into account the paint stroke size and add some padding.
+                RectF rect = new RectF();
+                float left = u * splitWidth;
+                float right = left + splitWidth;
+                float top = i * splitHeight;
+                float bottom = top + splitHeight;
+                rect.set(left, top, right, bottom);
+                rects[i][u] = rect;
+            }
+        }
         invalidate();
     }
 

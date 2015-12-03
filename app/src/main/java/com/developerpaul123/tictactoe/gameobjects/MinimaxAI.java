@@ -2,6 +2,7 @@ package com.developerpaul123.tictactoe.gameobjects;
 
 import android.util.Log;
 
+import com.developerpaul123.tictactoe.abstracts.Board;
 import com.developerpaul123.tictactoe.abstracts.MinimaxTemplate;
 
 import java.util.ArrayList;
@@ -11,43 +12,52 @@ import java.util.List;
  * Created by Paul on 11/24/2015.
  * Minimax AI player for Tic Tac Toe.
  */
-public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoard> {
+public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board> {
 
+    private int maxDepth;
     /**
      * Default constructor.
      * Pass super call with MINIMAX player type.
      */
     public MinimaxAI() {
         super(PlayerType.COMPUTER_MINIMAX.getValue());
+        maxDepth = 9;
     }
 
+    /**
+     * Set the maximum depth for the minimax search.
+     * @param depth the max depth.
+     */
+    public void setMaxDepth(int depth) {
+        this.maxDepth = depth;
+    }
     /**
      * Performs the best possible move for this player on the given board.
      * @param b the current board.
      * @return a Point that corresponds to the AI's move on the board.
      */
-    public Point performMove(ClassicBoard b) {
+    public Point performMove(Board b) {
 //        ComputerMove move = getBestMove(b, getPlayerType(), 1);
-        ComputerMove move = minimax(b, getPlayerType());
+        ComputerMove move = minimax(b, getPlayerType(), maxDepth);
         Log.i("Computer", "Score: " + move.score());
         return move.point();
     }
 
     /**
      * Pure minimax algorithm. This is a perfect AI player.
-     * @param classicBoard the current classicBoard.
+     * @param board the current Board.
      * @param type the player type.
      * @return the best ComputerMove.
      */
-    public ComputerMove minimax(ClassicBoard classicBoard, int type) {
+    public ComputerMove minimax(Board board, int type, int depth) {
 
-        List<Point> availables = classicBoard.getAvailablePoints();
+        List<Point> availables = board.getAvailablePoints();
 
-        if(classicBoard.isGameOver()) {
-            if(classicBoard.hasOWon()) {
+        if(board.isGameOver() || depth == 0) {
+            if(board.hasPlayerWon(PlayerType.COMPUTER_MINIMAX.getValue())) {
                 return new ComputerMove(1000);
             }
-            else if(classicBoard.hasXWon()) {
+            else if(board.hasPlayerWon(PlayerType.USER.getValue())) {
                 return new ComputerMove(-1000);
             }
             else {
@@ -59,17 +69,17 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
 
         for(int i = 0; i < availables.size(); i++) {
             Point p = availables.get(i);
-            classicBoard.addAMove(p, type);
+            board.addAMove(p, type);
             ComputerMove move = new ComputerMove();
             if(type == PlayerType.USER.getValue()) {
-                move = minimax(classicBoard, PlayerType.COMPUTER_MINIMAX.getValue());
+                move = minimax(board, PlayerType.COMPUTER_MINIMAX.getValue(), depth -1);
             }
             else if(type == PlayerType.COMPUTER_MINIMAX.getValue()) {
-                move = minimax(classicBoard, PlayerType.USER.getValue());
+                move = minimax(board, PlayerType.USER.getValue(), depth -1);
             }
             move.setPoint(p);
             mMoves.add(move);
-            classicBoard.removeAMove(p);
+            board.removeAMove(p);
         }
 
         //get the best move for the respective player.
@@ -99,11 +109,11 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
     }
 
     @Override
-    public ComputerMove getBestMove(final ClassicBoard classicBoard, Integer type, int depth) {
+    public ComputerMove getBestMove(final Board board, Integer type, int depth) {
 
         // Generate possible next moves in a list.
 
-        List<Point> nextMoves = generateMoves(classicBoard);
+        List<Point> nextMoves = generateMoves(board);
 
         // mySeed is maximizing; while oppSeed is minimizing
         int bestScore = (type == getPlayerType()) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -112,27 +122,27 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
 
         if (nextMoves.isEmpty() || depth == 0) {
             // Gameover or depth reached, evaluate score
-            bestScore = evaluate(classicBoard);
+            bestScore = evaluate(board);
         } else {
             for (int i = 0; i < nextMoves.size(); i++) {
                 Point play = nextMoves.get(i);
                 // Try this move for the current "player"
-                classicBoard.addAMove(play, type);
+                board.addAMove(play, type);
                 if (type.equals(getPlayerType())) {  // mySeed (computer) is maximizing player
-                    currentScore = getBestMove(classicBoard, PlayerType.USER.getValue(), depth-1).score();
+                    currentScore = getBestMove(board, PlayerType.USER.getValue(), depth-1).score();
                     if (currentScore > bestScore) {
                         bestScore = currentScore;
                         bestPlay = play;
                     }
                 } else {  // oppSeed is minimizing player
-                    currentScore = getBestMove(classicBoard, getPlayerType(), depth-1).score();
+                    currentScore = getBestMove(board, getPlayerType(), depth-1).score();
                     if (currentScore < bestScore) {
                         bestScore = currentScore;
                         bestPlay = play;
                     }
                 }
                 // Undo move
-                classicBoard.removeAMove(play);
+                board.removeAMove(play);
             }
         }
         return new ComputerMove(bestPlay, bestScore);
@@ -143,11 +153,11 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @param b the current board.
      * @return a List of Point objects, empty if the game is over.
      */
-    private List<Point> generateMoves(ClassicBoard b) {
+    private List<Point> generateMoves(Board b) {
         List<Point> nextMoves = new ArrayList<Point>(); // allocate List
 
         // If gameover, i.e., no next move
-        if (b.hasOWon() || b.hasXWon()) {
+        if (b.isGameOver()) {
             return nextMoves;   // return empty list
         }
         return b.getAvailablePoints();
@@ -160,7 +170,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @param b the current board.
      * @return the total score for a given player.
      */
-    private int evaluate(ClassicBoard b) {
+    private int evaluate(Board b) {
         int score = 0;
         // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
         score += evaluateWin(b, 0, 0, 0, 1, 0, 2);  // row 0
@@ -194,11 +204,11 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @param col3 third column coordinate.
      * @return int a score.
      */
-    private int evaluateWin(ClassicBoard classicBoard, int row1, int col1, int row2, int col2, int row3, int col3) {
-        if(classicBoard.hasOWon()) {
+    private int evaluateWin(Board classicBoard, int row1, int col1, int row2, int col2, int row3, int col3) {
+        if(classicBoard.hasPlayerWon(PlayerType.COMPUTER_MINIMAX.getValue())) {
             return 1000;
         }
-        else if(classicBoard.hasXWon()) {
+        else if(classicBoard.hasPlayerWon(PlayerType.USER.getValue())) {
             return -1000;
         }
         else {
@@ -217,7 +227,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @param col3 third column coordinate.
      * @return int a score.
      */
-    private int evaluateBlock(ClassicBoard b, int row1, int col1, int row2, int col2, int row3, int col3) {
+    private int evaluateBlock(Board b, int row1, int col1, int row2, int col2, int row3, int col3) {
         int[][] board = b.getBoard();
         int[] values  = {board[row1][col1], board[row2][col2], board[row3][col3]};
         int score = 500;
@@ -265,7 +275,7 @@ public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, ClassicBoa
      * @param b the current board.
      * @return
      */
-    private int evaluateFork(ClassicBoard b) {
+    private int evaluateFork(Board b) {
         //check for forks.
 
         //Split fork with one move in the center.

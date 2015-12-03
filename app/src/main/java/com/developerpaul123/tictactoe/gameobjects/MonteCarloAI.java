@@ -6,6 +6,9 @@ import java.util.List;
 
 /**
  * Created by Paul on 11/28/2015.
+ *
+ * This class encapsulates an MonteCarlo AI player using a Monte Carlo
+ * Tree Search with UCT.
  */
 public class MonteCarloAI extends MCTSTemplate<Point, ClassicBoard, Integer> {
 
