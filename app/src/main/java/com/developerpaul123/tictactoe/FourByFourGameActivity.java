@@ -16,8 +16,19 @@ import com.developerpaul123.tictactoe.views.TicTacToeView;
  */
 public class FourByFourGameActivity extends AbstractGameActivity implements TicTacToeView.TicTacToeListener{
 
+    /**
+     * Current board.
+     */
     FourByFourBoard board;
+
+    /**
+     * The computer player for this activity.
+     */
     MinimaxAI computer;
+
+    /**
+     * Holder for boolean indicating if the game is over.
+     */
     boolean isGameOver;
 
     @Override
