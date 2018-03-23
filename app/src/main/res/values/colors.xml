@@ -8,6 +8,6 @@
     <color name="colorSecondaryText">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-
+    <color name="white">#ffffff</color>
     <color name="secondPlayerColor">#F57C00</color>
 </resources>

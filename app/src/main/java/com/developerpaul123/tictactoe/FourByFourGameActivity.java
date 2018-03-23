@@ -6,7 +6,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.developerpaul123.tictactoe.abstracts.AbstractGameActivity;
 import com.developerpaul123.tictactoe.abstracts.Board;
 import com.developerpaul123.tictactoe.gameobjects.FourByFourBoard;
-import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
+import com.developerpaul123.tictactoe.gameobjects.MinimaxAi;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
 import com.developerpaul123.tictactoe.views.TicTacToeView;
@@ -14,7 +14,7 @@ import com.developerpaul123.tictactoe.views.TicTacToeView;
 /**
  * Created by Paul on 11/29/2015.
  */
-public class FourByFourGameActivity extends AbstractGameActivity implements TicTacToeView.TicTacToeListener{
+public class FourByFourGameActivity extends AbstractGameActivity implements TicTacToeView.TicTacToeListener {
 
     /**
      * Current board.
@@ -24,7 +24,7 @@ public class FourByFourGameActivity extends AbstractGameActivity implements TicT
     /**
      * The computer player for this activity.
      */
-    MinimaxAI computer;
+    MinimaxAi computer;
 
     /**
      * Holder for boolean indicating if the game is over.
@@ -43,7 +43,7 @@ public class FourByFourGameActivity extends AbstractGameActivity implements TicT
             }
         });
 
-        computer = new MinimaxAI();
+        computer = new MinimaxAi();
         computer.setMaxDepth(4);
         board = new FourByFourBoard();
         ticTacToeView.setBoard(board);

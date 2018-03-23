@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_menu_linear_layout"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_menu_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp"
@@ -10,23 +11,29 @@
 
     <com.developerpaul123.tictactoe.views.TicTacToeView
         android:id="@+id/main_menu_tic_tac_toe_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:alpha="0.3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.devpaul.materiallibrary.views.MaterialFlatButton
+    <Button
         android:id="@+id/main_menu_play_button"
-        app:mat_flat_button_color="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:mat_flat_button_text="Play"
-        android:layout_gravity="center_horizontal|center_vertical"/>
-    <com.devpaul.materiallibrary.views.MaterialFlatButton
-        android:id="@+id/main_menu_settings_button"
-        app:mat_flat_button_color="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:mat_flat_button_text="Settings"
-        android:layout_gravity="center_horizontal|center_vertical"/>
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="40sp"
+        android:text="@string/play"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_menu_tic_tac_toe_view" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

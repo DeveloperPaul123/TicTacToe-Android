@@ -107,6 +107,7 @@ public class TicTacToeView extends View {
         mainPaint.setAntiAlias(true);
         mainPaint.setStyle(Paint.Style.STROKE);
         mainPaint.setStrokeCap(Paint.Cap.ROUND);
+        mainPaint.setStrokeJoin(Paint.Join.ROUND);
 
         oPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         oPaint.setColor(getResources().getColor(R.color.secondPlayerColor));
@@ -136,12 +137,12 @@ public class TicTacToeView extends View {
         int width = getWidth();
         float splitHeight = height/rows;
         float splitWidth = width/cols;
-
+        float padding = 24.0f;
         //draw horizontal lines.
         for(int i = 0; i < rows; i++) {
             if(i < rows-1) {
-                canvas.drawLine(8.0f, (i * splitHeight) + splitHeight,
-                        width - 8.0f, (i * splitHeight) + splitHeight, mainPaint);
+                canvas.drawLine(padding, (i * splitHeight) + splitHeight,
+                        width - padding, (i * splitHeight) + splitHeight, mainPaint);
             }
             //get rectangles.
             for(int u = 0; u < cols; u++) {
@@ -158,8 +159,8 @@ public class TicTacToeView extends View {
 
         //draw vertical lines.
         for(int j = 0; j < cols-1; j++) {
-            canvas.drawLine((j*splitWidth) + splitWidth, 8.0f,
-                    (j*splitWidth) + splitWidth, height - 8.0f, mainPaint);
+            canvas.drawLine((j*splitWidth) + splitWidth, padding,
+                    (j*splitWidth) + splitWidth, height - padding, mainPaint);
         }
 
         //draw current plays.

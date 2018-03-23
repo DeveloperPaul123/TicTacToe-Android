@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
  * players they'd like to have.
  */
 public class PlayTypeSelectionActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

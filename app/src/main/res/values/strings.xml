@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">TicTacToe</string>
+    <string name="settings">Settings</string>
+    <string name="play">Play</string>
     <array name="play_type_values">
         <item>"Classic 3x3 Grid"</item>
         <item>"4x4 Grid"</item>

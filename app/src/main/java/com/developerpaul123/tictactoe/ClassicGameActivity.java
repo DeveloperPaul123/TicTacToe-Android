@@ -6,7 +6,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.developerpaul123.tictactoe.abstracts.AbstractGameActivity;
 import com.developerpaul123.tictactoe.abstracts.Board;
 import com.developerpaul123.tictactoe.gameobjects.ClassicBoard;
-import com.developerpaul123.tictactoe.gameobjects.MinimaxAI;
+import com.developerpaul123.tictactoe.gameobjects.MinimaxAi;
 import com.developerpaul123.tictactoe.gameobjects.PlayerType;
 import com.developerpaul123.tictactoe.gameobjects.Point;
 import com.developerpaul123.tictactoe.views.TicTacToeView;
@@ -17,7 +17,7 @@ import com.developerpaul123.tictactoe.views.TicTacToeView;
 public class ClassicGameActivity extends AbstractGameActivity implements TicTacToeView.TicTacToeListener{
 
     ClassicBoard classicBoard;
-    MinimaxAI computerPlayer;
+    MinimaxAi computerPlayer;
     boolean gameOver;
 
     @Override
@@ -36,7 +36,7 @@ public class ClassicGameActivity extends AbstractGameActivity implements TicTacT
         classicBoard = new ClassicBoard();
         ticTacToeView.setBoard(classicBoard);
         ticTacToeView.setTicTacToeListener(this);
-        computerPlayer = new MinimaxAI();
+        computerPlayer = new MinimaxAi();
         gameOver = false;
     }
 

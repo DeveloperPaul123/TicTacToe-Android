@@ -12,14 +12,14 @@ import java.util.List;
  * Created by Paul on 11/24/2015.
  * Minimax AI player for Tic Tac Toe.
  */
-public class MinimaxAI extends MinimaxTemplate<ComputerMove, Integer, Board> {
+public class MinimaxAi extends MinimaxTemplate<ComputerMove, Integer, Board> {
 
     private int maxDepth;
     /**
      * Default constructor.
-     * Pass super call with MINIMAX player type.
+     * Pass super call with {@link PlayerType}.
      */
-    public MinimaxAI() {
+    public MinimaxAi() {
         super(PlayerType.COMPUTER_MINIMAX.getValue());
         maxDepth = 9;
     }

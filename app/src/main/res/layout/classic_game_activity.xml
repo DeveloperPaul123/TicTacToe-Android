@@ -18,11 +18,11 @@
         android:layout_alignRight="@+id/material_fab"
         android:layout_alignEnd="@+id/material_fab" />
 
-    <com.devpaul.materiallibrary.views.MaterialFloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/material_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:mat_fab_icon="@drawable/ic_action_av_replay"
+        android:src="@drawable/ic_action_av_replay"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
